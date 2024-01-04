@@ -41,19 +41,4 @@ class Search(models.Model):
         return self.title
 
 
-class Chat(models.Model):
-    to_message = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    from_message = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-    @classmethod
-    def get_chats(cls, from_user, to_user):
-        return cls.objects.filter(quizzy_app(from_message=from_user, to_message=to_user) | quizzy_app(from_message=to_user, to_message=from_user))
 
-    @classmethod
-    def get_or_create_chat(cls, from_user, to_user):
-        chat, created = cls.objects.get_or_create(from_message=from_user, to_message=to_user)
-        if not created:
-            chat, created = cls.objects.get_or_create(from_message=to_user, to_message=from_user)
-        return chat, created

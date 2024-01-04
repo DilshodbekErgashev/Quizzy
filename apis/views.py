@@ -1,13 +1,13 @@
 
 from django.shortcuts import get_object_or_404
 from requests import Response
-from .serializer import ChatSerializer, PostSerializer, CommentSerializer, SearchSerializer
+from .serializer import  PostSerializer, CommentSerializer, SearchSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from .permissions import IsOwnerOrAdmin, CanCreatePostOrComment, CanLikePostOrComment
 from rest_framework.views import APIView
-from quizzy_app.models import Chat, Post,Comment, Search
+from quizzy_app.models import  Post,Comment, Search
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
 
@@ -57,17 +57,7 @@ class LikeView(APIView):
         post.save()
         return Response(status=status.HTTP_200_OK)
 
-class ChatList(generics.ListCreateAPIView):
-    queryset = Chat.objects.all()
-    serializer_class = ChatSerializer
 
-    def get_queryset(self):
-        queryset = Chat.objects.all()
-        from_id = self.request.query_params.get('from_id')
-        to_id = self.request.query_params.get('to_id')
-
-        if from_id is not None and to_id is not None:
-            queryset = Chat.objects.filter(from_message=from_id,to_message=to_id)
             
 class SearchListAPIView(APIView):
     def get(self, request):

@@ -1,6 +1,6 @@
 from rest_framework.serializers import  ModelSerializer
 from rest_framework import  serializers
-from quizzy_app.models import Post,Comment,Chat
+from quizzy_app.models import Post,Comment
 
 class PostSerializer(ModelSerializer):
     user = serializers.CharField(read_only=True)
@@ -14,10 +14,7 @@ class CommentSerializer(ModelSerializer):
         model= Comment
         fields= "__all__"
         
-class ChatSerializer(ModelSerializer):
-    class Meta:
-        model = Chat
-        fields = '__all__'
+
         
 from quizzy_app.models import Search
 
