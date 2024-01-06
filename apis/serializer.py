@@ -14,11 +14,13 @@ class CommentSerializer(ModelSerializer):
         model= Comment
         fields= "__all__"
         
-
+        extra_kwargs = {
+            "likes": {"read_only": True},
+            "dislikes": {"read_only": True},
+            "date_created": {"read_only": True},
+        }
         
-from quizzy_app.models import Search
-
-class SearchSerializer(ModelSerializer):
+class SearchPostSerializer(ModelSerializer):
     class Meta:
-        model = Search
-        fields = '__all__'
+        model = Post
+        fields = "__all__"

@@ -8,7 +8,7 @@ urlpatterns =[
     path("posts/create",PostListCreateView.as_view()),
     path("posts/<int:pk>",PostDetailView.as_view()),
     path("comments/",CommentCreateView.as_view()),
-    path("search/",SearchListAPIView.as_view()),
+    path('search/',SearchPostView.as_view()),
     path("comments/<int:pk>",CommentDetailView.as_view()),
    
 

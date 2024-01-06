@@ -22,12 +22,14 @@ INSTALLED_APPS = [
     #1
     'apis.apps.ApisConfig',
     'quizzy_app.apps.QuizzyAppConfig',
+
     #2
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
     'allauth',
     'allauth.account',
+    
     'allauth.socialaccount',
     'dj_rest_auth.registration',
     'drf_spectacular',
