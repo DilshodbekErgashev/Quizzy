@@ -1,5 +1,6 @@
 from rest_framework.serializers import  ModelSerializer
 from rest_framework import  serializers
+
 from quizzy_app.models import CustomUser, Post,Comment
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -58,3 +59,14 @@ class CommentSerializer(ModelSerializer):
         model= Comment
         fields= "__all__"   
         
+        extra_kwargs = {
+            "likes": {"read_only": True},
+            "dislikes": {"read_only": True},
+            "date_created": {"read_only": True},
+        }
+        
+class SearchPostSerializer(ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+

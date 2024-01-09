@@ -6,7 +6,11 @@ from rest_framework import generics
 from apis.serializer import CommentSerializer, CustomUserLoginSerializer, CustomUserSerializer, PostSerializer
 from .permissions import IsOwnerOrReadOnly, PostPermission, CommentPermission
 from rest_framework.views import APIView
+
 from quizzy_app.models import CustomUser, Post, Comment
+
+from quizzy_app.models import  Post,Comment
+
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
@@ -61,13 +65,12 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class CommentCreateView(generics.CreateAPIView):
+class CommentCreateView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -83,4 +86,3 @@ class LikeView(APIView):
         post = get_object_or_404(Post, pk=pk)
         post.likes += 1
         post.save()
-        return Response(status=status.HTTP_200_OK)

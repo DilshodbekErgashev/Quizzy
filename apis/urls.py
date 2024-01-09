@@ -1,10 +1,12 @@
 from django.urls import path
+
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 from .views import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('users', CustomUserViewSet)
+
 
 urlpatterns =[
     path('register/', CustomUserRegistrationView.as_view(), name='user-register'),
@@ -15,6 +17,5 @@ urlpatterns =[
     path("posts/create",PostListCreateView.as_view()),
     path("posts/<int:pk>",PostDetailView.as_view()),
     path("comments/",CommentCreateView.as_view()),
-    path("comments/<int:pk>",CommentDetailView.as_view()),
 
 ]
