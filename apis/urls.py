@@ -1,17 +1,20 @@
-from django.urls import path, re_path
-
+from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 from .views import *
-from apis import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('users', CustomUserViewSet)
 
 urlpatterns =[
+    path('register/', CustomUserRegistrationView.as_view(), name='user-register'),
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'), 
     path("posts", PostAPIView.as_view(), name='post-search'),
     path("posts/create",PostListCreateView.as_view()),
     path("posts/<int:pk>",PostDetailView.as_view()),
     path("comments/",CommentCreateView.as_view()),
-    path("search/",SearchListAPIView.as_view()),
     path("comments/<int:pk>",CommentDetailView.as_view()),
-    re_path(r'^chat/$', views.ChatList.as_view(), name='chat-get-list'),
-    re_path(r'^chat/(?P<from_id>.+)&(?P<to_id>.+)/$', views.ChatList.as_view(), name='chat-list'),
 
-     
 ]

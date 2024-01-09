@@ -1,12 +1,37 @@
 
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-import quizzy_app
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name="customuser_set",
+        blank=True
+    )
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name="customuser_set",
+        blank=True
+    )
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        db_table = 'quizzy_app_customuser'
 
 class Post(models.Model):
-     user = models.ForeignKey(User, on_delete=models.CASCADE)
+     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
      title = models.CharField(max_length=100)
      image = models.ImageField(upload_to='posts/', null=True, blank=True)
      content = models.TextField(null=True, blank=True)
@@ -33,27 +58,6 @@ class Comment(models.Model):
      def save(self, *args, **kwargs):
          super().save(*args, **kwargs)
 
-class Search(models.Model):
-    title = models.CharField(max_length=100)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='searches')
-
-    def __str__(self):
-        return self.title
 
 
-class Chat(models.Model):
-    to_message = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    from_message = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-    @classmethod
-    def get_chats(cls, from_user, to_user):
-        return cls.objects.filter(quizzy_app(from_message=from_user, to_message=to_user) | quizzy_app(from_message=to_user, to_message=from_user))
 
-    @classmethod
-    def get_or_create_chat(cls, from_user, to_user):
-        chat, created = cls.objects.get_or_create(from_message=from_user, to_message=to_user)
-        if not created:
-            chat, created = cls.objects.get_or_create(from_message=to_user, to_message=from_user)
-        return chat, created

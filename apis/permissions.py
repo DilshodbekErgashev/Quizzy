@@ -1,25 +1,32 @@
-from django.shortcuts import render
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission
 
-class IsOwnerOrAdmin(permissions.BasePermission):
+
+class IsOwnerOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.user.is_superuser:
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
-        if obj.user == request.user:
-            return True
-        return False
+        return obj.user == request.user
 
-class CanCreatePostOrComment(permissions.BasePermission):
+
+class PostPermission(BasePermission):
     def has_permission(self, request, view):
+        if view.action == 'create':
+            return request.user.is_authenticated
+        return True
 
-        if request.user.is_authenticated:
-            return True
-        return False
-
-class CanLikePostOrComment(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
-        if obj.user != request.user:
-            return True
-        return False
+        if view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            return IsOwnerOrReadOnly().has_object_permission(request, view, obj)
+        return True
+
+
+class CommentPermission(BasePermission):
+    def has_permission(self, request, view):
+        if view.action == 'create':
+            return request.user.is_authenticated
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        if view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            return IsOwnerOrReadOnly().has_object_permission(request, view, obj)
+        return True

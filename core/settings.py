@@ -20,8 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #1
+    
     'apis.apps.ApisConfig',
-    'quizzy_app.apps.QuizzyAppConfig',
+    'quizzy_app',
     #2
     'rest_framework',
     'rest_framework.authtoken',
@@ -68,7 +69,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "quizzy",
+        "NAME": "test_db",
         "USER": "postgres",
         "PASSWORD": "111200209",
         "HOST": "localhost",
@@ -111,10 +112,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+   'DEFAULT_AUTHENTICATION_CLASSES': [
+       'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -128,3 +129,5 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "A sample blog to learn about DRF",
     "VERSION": "1.0.0",
 }
+
+AUTH_USER_MODEL="quizzy_app.CustomUser"
