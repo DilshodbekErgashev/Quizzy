@@ -35,25 +35,27 @@ class Post(models.Model):
      title = models.CharField(max_length=100)
      image = models.ImageField(upload_to='posts/', null=True, blank=True)
      content = models.TextField(null=True, blank=True)
-     date_created = models.DateTimeField(default=timezone.now)
-     likes = models.IntegerField(default=0)
-     dislikes = models.IntegerField(default=0)
+     date_created = models.DateTimeField(default=timezone.now)     
+     likes = models.PositiveBigIntegerField(null=True, default=0)
+     dislikes = models.PositiveBigIntegerField(null=True, default=0)
 
      def __str__(self):
          return f'{self.user.username}-Post'
 
      def get_absolute_url(self):
          return reverse('post-detail', args=[str(self.id)])
+     
 
 class Comment(models.Model):
-     question = models.ForeignKey(Post, related_name='comment', on_delete=models.CASCADE)
+     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")   
      content = models.TextField(null=True, blank=True)
      date_created = models.DateTimeField(default=timezone.now)
-     likes = models.IntegerField(default=0)
-     dislikes = models.IntegerField(default=0)
+     likes = models.PositiveBigIntegerField(null=True, default=0)
+     dislikes = models.PositiveBigIntegerField(null=True, default=0)
 
      def __str__(self) -> str:
-         return '%s- %s' % (self.question.title, self.question.user)
-
-     def save(self, *args, **kwargs):
-         super().save(*args, **kwargs)
+         return '%s- %s' % (self.post.title, self.post.user)
+     
+     def get_queryset(self):
+        return super().get_queryset().filter(post=self.kwargs.get('post_id'))
+         

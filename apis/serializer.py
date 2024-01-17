@@ -49,9 +49,22 @@ class CustomUserLoginSerializer(serializers.Serializer):
     
 class PostSerializer(ModelSerializer):
     user = serializers.CharField(read_only=True)
+    # show comments related to this post
+    
+
     class Meta:
         model= Post
-        fields = ("title", "image", "user","content","likes","dislikes")
+        fields = ("id", "title", "image", "user", "content", "likes", "dislikes")
+    
+    def create(self, validated_data):
+        validated_data["user"] = CustomUser.objects.get(id=self.context["request"].user.id)
+        return super().create(validated_data)
+    
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        post_obj = instance
+        comments = post_obj.comments.all()
+        repr["comments"] =comments 
         
         
 class CommentSerializer(ModelSerializer):
@@ -65,6 +78,11 @@ class CommentSerializer(ModelSerializer):
             "date_created": {"read_only": True},
         }
         
+    def create(self, validated_data):
+        post_id = self.context.get('view').kwargs.get('post_id')  
+        validated_data['question_id'] = post_id  
+        return super().create(validated_data)
+    
 class SearchPostSerializer(ModelSerializer):
     class Meta:
         model = Post
