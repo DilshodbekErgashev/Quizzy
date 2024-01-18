@@ -61,10 +61,11 @@ class PostSerializer(ModelSerializer):
         return super().create(validated_data)
     
     def to_representation(self, instance):
-        repr = super().to_representation(instance)
+        data = super().to_representation(instance)
         post_obj = instance
         comments = post_obj.comments.all()
-        repr["comments"] =comments 
+        data["comments"] = comments
+        return data
         
         
 class CommentSerializer(ModelSerializer):

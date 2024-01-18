@@ -84,57 +84,7 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     
 from rest_framework import viewsets
 
-# class CreateReadCommentView (viewsets.ModelViewSet):
-#     serializer_class = CommentSerializer
-#     permission_classes = [AllowAny]
-#     queryset = Comment.objects.all()
 
-#     def perform_create(self, serializer):
-#         post = Post.objects.get(id=self.kwargs.get('post_id')) 
-#         serializer.save(question=post)
-
-
-#     def get_queryset(self): 
-#          post_id = self.kwargs.get('post_id') 
-#          return super().get_queryset().filter(post_id=post_id)
-# from rest_framework import status
-# class BoardViewSet(viewsets.ModelViewSet):
-#     queryset = Post.objects.exclude(deleted=True)
-#     serializer_class = PostSerializer
-#     permission_classes = [IsOwnerOrReadOnly]
-
-#     def destroy(self, request: Request, *args, **kwargs) -> Response:
-#         board = self.get_object()
-#         if not board.deleted:
-#             board.deleted = True
-#             board.save()
-#             return Response(status=status.HTTP_204_NO_CONTENT)
-#         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-#     def get_serializer_class(self):
-#         if self.action == 'retrieve':
-#             return PostSerializer
-
-#         return super().get_serializer_class()
-
-    # @action(detail=True, methods=['get', 'post', 'delete'], serializer_class=CommentSerializer)
-    # def comments(self, request, pk=None):
-    #     if self.request.method == 'GET':
-    #         board = self.get_object()
-    #         comments = board.comment_set.all()
-    #         serializer = CommentSerializer(comments, many=True)
-
-    #         return Response(serializer.data)
-
-        # if self.request.method == 'POST':
-        #     board = self.get_object()
-        #     serializer = CommentSerializer(data=request.data)
-        #     if serializer.is_valid():
-        #         user = serializer.data['user']
-        #         text = serializer.data['text']
-        #         Comment.objects.create(board=board, user=user, text=text)
-
-        #         return Response(status=status.HTTP_201_CREATED)
 
 class SearchPostView(generics.ListAPIView):
     queryset = Post.objects.all().order_by("likes")

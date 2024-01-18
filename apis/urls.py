@@ -15,6 +15,6 @@ urlpatterns =[
     path("posts/create",PostListCreateView.as_view()),
     path("posts/<int:pk>",PostDetailView.as_view()),
     path("like/", like),
-    # path('post/<int:post_id>/comments', CreateReadCommentView.as_view({'post': 'create', 'get': 'list'})),
+   
     path('search/',SearchPostView.as_view()),
 ]
