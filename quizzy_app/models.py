@@ -54,8 +54,7 @@ class Comment(models.Model):
      dislikes = models.PositiveBigIntegerField(null=True, default=0)
 
      def __str__(self) -> str:
-         return '%s- %s' % (self.post.title, self.post.user)
+         return '%s - %s' % (self.post.title, self.post.user)
      
      def get_queryset(self):
         return super().get_queryset().filter(post=self.kwargs.get('post_id'))
-         
