@@ -45,7 +45,8 @@ class CustomUserLoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError('Unable to log in with provided credentials.')
         else:
             raise serializers.ValidationError('Must include "email" and "password".')
-    
+        
+from django.core.exceptions import ObjectDoesNotExist
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -58,13 +59,17 @@ class CommentSerializer(serializers.ModelSerializer):
     }
         
     def create(self, validated_data):
-        post_id = self.context.get('view').kwargs.get('post_id')  
-        validated_data['question_id'] = post_id  
-        return super().create(validated_data)   
+            post_id = self.context.get('view').kwargs.get('post_id')
+            try:
+                post = Post.objects.get(id=post_id)
+                validated_data['post'] = post
+                return super().create(validated_data)
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError('Post does not exist.')
     
 class PostSerializer(ModelSerializer):
     user = serializers.CharField(read_only=True)
-    comments = CommentSerializer(many=True)
+    comments = CommentSerializer(many=True, required=False)
 
     class Meta:
         model= Post
@@ -72,9 +77,9 @@ class PostSerializer(ModelSerializer):
 
     
     def create(self, validated_data):
-        validated_data["user"] = CustomUser.objects.get(id=self.context["request"].user.id)
-        return super().create(validated_data)
-    
+            validated_data["user"] = CustomUser.objects.get(id=self.context["request"].user.id)
+            return super().create(validated_data)
+        
     def to_representation(self, instance):
         data = super().to_representation(instance)
         post_obj = instance

@@ -45,6 +45,9 @@ class Post(models.Model):
      def get_absolute_url(self):
          return reverse('post-detail', args=[str(self.id)])
      
+class CommentManager(models.Manager):
+    def get_queryset_for_post(self, post_id):
+        return self.filter(post_id=post_id)
 
 class Comment(models.Model):
      post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")   
@@ -53,8 +56,7 @@ class Comment(models.Model):
      likes = models.PositiveBigIntegerField(null=True, default=0)
      dislikes = models.PositiveBigIntegerField(null=True, default=0)
 
+     objects = CommentManager()
+
      def __str__(self) -> str:
-         return '%s - %s' % (self.post.title, self.post.user)
-     
-     def get_queryset(self):
-        return super().get_queryset().filter(post=self.kwargs.get('post_id'))
+        return '%s - %s' % (self.post.title, self.post.user)

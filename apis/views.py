@@ -51,16 +51,26 @@ class PostAPIView(generics.ListAPIView):
         return queryset
     
 class CommentCreateView(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.get_queryset_for_post(post_id)
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView): 
+    serializer_class = CommentSerializer 
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.get_queryset_for_post(post_id)
 
-class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [AllowAny]
-    
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, pk=self.kwargs.get('comment_id'))
+        return obj
+        
 class PostListCreateView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
