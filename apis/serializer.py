@@ -45,49 +45,60 @@ class CustomUserLoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError('Unable to log in with provided credentials.')
         else:
             raise serializers.ValidationError('Must include "email" and "password".')
-        
-from django.core.exceptions import ObjectDoesNotExist
+    
+from quizzy_app.models import Comment
+
 class CommentSerializer(serializers.ModelSerializer):
+    post_id = serializers.CharField(read_only=True)
     class Meta:
         model = Comment
         fields= "__all__"
-        
+
     extra_kwargs = {
         "likes": {"read_only": True},
         "dislikes": {"read_only": True},
         "date_created": {"read_only": True},
     }
-        
+
     def create(self, validated_data):
-            post_id = self.context.get('view').kwargs.get('post_id')
-            try:
-                post = Post.objects.get(id=post_id)
-                validated_data['post'] = post
-                return super().create(validated_data)
-            except ObjectDoesNotExist:
-                raise serializers.ValidationError('Post does not exist.')
+        post_id = validated_data.get('post')
+        if post_id is not None:
+            validated_data['post'] = post_id
+        comment = Comment.objects.create(**validated_data)
+        return comment
     
+
+
+
+
 class PostSerializer(ModelSerializer):
     user = serializers.CharField(read_only=True)
-    comments = CommentSerializer(many=True, required=False)
+    # comments = CommentSerializer(many=True)
 
     class Meta:
         model= Post
-        fields = ["id", "title", "image", "user", "content", "likes", "dislikes", "comments"]
+        fields = ["id", "title", "image", "user", "content", "likes", "dislikes"]
 
     
     def create(self, validated_data):
-            validated_data["user"] = CustomUser.objects.get(id=self.context["request"].user.id)
-            return super().create(validated_data)
-        
+        validated_data["user"] = CustomUser.objects.get(id=self.context["request"].user.id)
+        return super().create(validated_data)
+    
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     post_obj = instance
+    #     comments = post_obj.comments.all()
+    #     data["comments"] = comments
+    #     return data
+    
     def to_representation(self, instance):
         data = super().to_representation(instance)
         post_obj = instance
         comments = post_obj.comments.all()
-        data["comments"] = comments
+        comment_serializer = CommentSerializer(comments, many=True)
+        data["comments"] = comment_serializer.data
         return data
-        
-        
+
 
     
 class SearchPostSerializer(ModelSerializer):
